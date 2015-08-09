@@ -1,0 +1,21 @@
+{
+  "name": "starstuff",
+  "version": "1.0.0",
+  "description": "A UI library for JXA",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "jxa",
+    "cocoa"
+  ],
+  "author": {
+    "name": "Tyler Gaw",
+    "email": "me@tylergaw.com"
+  },
+  "license": "ISC",
+  "dependencies": {
+    "babel-runtime": "^5.8.20"
+  }
+}
