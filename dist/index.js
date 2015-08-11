@@ -1,13 +1,24 @@
-ObjC.import('Cocoa');
+'use strict';
+
+Object.defineProperty(exports, '__esModule', {
+  value: true
+});
+
+function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) arr2[i] = arr[i]; return arr2; } else { return Array.from(arr); } }
+
+ObjC['import']('Cocoa');
 
 var starstuff = {};
 
-let isFunction = function(func) {
+var isFunction = function isFunction(func) {
   var getType = {};
   return func && getType.toString.call(func) === '[object Function]';
-}
+};
 
-starstuff.setOpts = function(defaults = {}, options = {}) {
+starstuff.setOpts = function () {
+  var defaults = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
+  var options = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
+
   return Object.assign({}, defaults, options);
 };
 
@@ -18,35 +29,34 @@ starstuff.setOpts = function(defaults = {}, options = {}) {
 // ex:
 //   var xywh = [20, 20, 200, 20];
 //   startdust.makeRect(...xywh);
-starstuff.makeRect = function(x, y, w, h) {
+starstuff.makeRect = function (x, y, w, h) {
   return $.NSMakeRect(x, y, w, h);
 };
 
-starstuff.window = function(settings) {
-  let opts = starstuff.setOpts({
+starstuff.window = function (settings) {
+  var opts = starstuff.setOpts({
     title: 'My Application',
     rect: [0, 0, 200, 200]
   }, settings);
 
-  let styleMask = $.NSTitledWindowMask | $.NSClosableWindowMask |
-    $.NSResizableWindowMask | $.NSMiniaturizableWindowMask;
+  var styleMask = $.NSTitledWindowMask | $.NSClosableWindowMask | $.NSResizableWindowMask | $.NSMiniaturizableWindowMask;
 
-  let obj = {
+  var obj = {
     // View hierarchy
     _h: [],
 
-    append(starstuffEl) {
+    append: function append(starstuffEl) {
       this._h.push(starstuffEl);
 
       this.el.contentView.addSubview(starstuffEl.el);
       return this;
     },
 
-    _findById(id) {
-      let c = this.children();
-      let $el = null;
+    _findById: function _findById(id) {
+      var c = this.children();
+      var $el = null;
 
-      for (let i = 0; i < c.length; i += 1) {
+      for (var i = 0; i < c.length; i += 1) {
         if (c[i].id() === id) {
           $el = c[i];
           break;
@@ -56,20 +66,20 @@ starstuff.window = function(settings) {
       return $el;
     },
 
-    find(selector) {
-      let $el = null;
+    find: function find(selector) {
+      var $el = null;
 
       if (!selector) {
         return $el;
       }
 
-      let firstChar = selector[0];
-      let isIdSelector = (firstChar === '#');
-      let isClassSelector = (firstChar === '.');
+      var firstChar = selector[0];
+      var isIdSelector = firstChar === '#';
+      var isClassSelector = firstChar === '.';
 
       // Is this an ID or a class selector?
       if (isIdSelector || isClassSelector) {
-        let search = selector.substr(1, selector.length);
+        var search = selector.substr(1, selector.length);
 
         if (isIdSelector) {
           $el = this._findById(search);
@@ -81,11 +91,13 @@ starstuff.window = function(settings) {
 
     // Return the subviews of the contentView as a JavaScript Array.
     // @return {Array}
-    children() {
+    children: function children() {
       return this._h;
     },
 
-    title(t = null) {
+    title: function title() {
+      var t = arguments.length <= 0 || arguments[0] === undefined ? null : arguments[0];
+
       if (t) {
         this.el.title = t;
         return this;
@@ -94,7 +106,9 @@ starstuff.window = function(settings) {
       }
     },
 
-    delegate(d = null) {
+    delegate: function delegate() {
+      var d = arguments.length <= 0 || arguments[0] === undefined ? null : arguments[0];
+
       if (d) {
         this.el.delegate = d;
         return this;
@@ -103,13 +117,15 @@ starstuff.window = function(settings) {
       }
     },
 
-    center() {
+    center: function center() {
       this.el.center;
     },
 
     rect: [0, 0, 400, 200],
 
-    pos(p = null) {
+    pos: function pos() {
+      var p = arguments.length <= 0 || arguments[0] === undefined ? null : arguments[0];
+
       if (p) {
         this.rect[0] = p.x;
         this.rect[1] = p.y;
@@ -121,7 +137,9 @@ starstuff.window = function(settings) {
       }
     },
 
-    width(w = null) {
+    width: function width() {
+      var w = arguments.length <= 0 || arguments[0] === undefined ? null : arguments[0];
+
       if (w) {
         this.rect[2] = w;
         return this;
@@ -130,7 +148,9 @@ starstuff.window = function(settings) {
       }
     },
 
-    height(h = null) {
+    height: function height() {
+      var h = arguments.length <= 0 || arguments[0] === undefined ? null : arguments[0];
+
       if (h) {
         this.rect[3] = h;
         return this;
@@ -139,13 +159,10 @@ starstuff.window = function(settings) {
       }
     },
 
-    size(w, h) {
+    size: function size(w, h) {
       this.width(w);
       this.height(h);
-      this.el.setFrameDisplay(
-        starstuff.makeRect(...this.rect),
-        true
-      );
+      this.el.setFrameDisplay(starstuff.makeRect.apply(starstuff, _toConsumableArray(this.rect)), true);
       return this;
     }
   };
@@ -158,12 +175,7 @@ starstuff.window = function(settings) {
   obj.width(opts.rect[2]);
   obj.height(opts.rect[3]);
 
-  obj.el = $.NSWindow.alloc.initWithContentRectStyleMaskBackingDefer(
-    starstuff.makeRect(...obj.rect),
-    styleMask,
-    $.NSBackingStoreBuffered,
-    false
-  );
+  obj.el = $.NSWindow.alloc.initWithContentRectStyleMaskBackingDefer(starstuff.makeRect.apply(starstuff, _toConsumableArray(obj.rect)), styleMask, $.NSBackingStoreBuffered, false);
 
   obj.center();
   obj.el.makeKeyAndOrderFront(obj.el);
@@ -173,13 +185,15 @@ starstuff.window = function(settings) {
   return obj;
 };
 
-starstuff.openPanel = function(settings) {
-  let opts = starstuff.setOpts({
+starstuff.openPanel = function (settings) {
+  var opts = starstuff.setOpts({
     title: 'Open'
   }, settings);
 
-  let obj = {
-    title (t = null) {
+  var obj = {
+    title: function title() {
+      var t = arguments.length <= 0 || arguments[0] === undefined ? null : arguments[0];
+
       if (t) {
         this.el.title = t;
         return this;
@@ -191,7 +205,9 @@ starstuff.openPanel = function(settings) {
     /**
      * @param t {Array}
      */
-    allowedTypes (t = null) {
+    allowedTypes: function allowedTypes() {
+      var t = arguments.length <= 0 || arguments[0] === undefined ? null : arguments[0];
+
       if (t) {
         // We use `$()` to convert the JS array to an NSArray
         this.el.allowedFileTypes = $(t);
@@ -201,7 +217,9 @@ starstuff.openPanel = function(settings) {
       }
     },
 
-    open (ok = null) {
+    open: function open() {
+      var ok = arguments.length <= 0 || arguments[0] === undefined ? null : arguments[0];
+
       if (this.el.runModal == $.NSOKButton) {
         if (ok && isFunction(ok)) {
           // Pass back a JS Array instead of the NSArray that the openPanel
@@ -212,7 +230,9 @@ starstuff.openPanel = function(settings) {
     },
 
     _id: null,
-    id(i = null) {
+    id: function id() {
+      var i = arguments.length <= 0 || arguments[0] === undefined ? null : arguments[0];
+
       if (i) {
         this._id = i;
         return this;
@@ -223,7 +243,7 @@ starstuff.openPanel = function(settings) {
   };
 
   obj.el = $.NSOpenPanel.openPanel;
-  obj.classString = $.NSStringFromClass(obj.el.class).js;
+  obj.classString = $.NSStringFromClass(obj.el['class']).js;
 
   obj.title(opts.title);
 
@@ -238,8 +258,8 @@ starstuff.openPanel = function(settings) {
   return obj;
 };
 
-starstuff.button = function(settings) {
-  let opts = starstuff.setOpts({
+starstuff.button = function (settings) {
+  var opts = starstuff.setOpts({
     title: 'Button',
     rect: [25, 25, 150, 24],
     bezelStyle: $.NSRoundedBezelStyle,
@@ -248,8 +268,10 @@ starstuff.button = function(settings) {
     action: null
   }, settings);
 
-  let obj = {
-    title(t = null) {
+  var obj = {
+    title: function title() {
+      var t = arguments.length <= 0 || arguments[0] === undefined ? null : arguments[0];
+
       if (t) {
         this.el.title = t;
         return this;
@@ -258,7 +280,9 @@ starstuff.button = function(settings) {
       }
     },
 
-    bezelStyle(b = null) {
+    bezelStyle: function bezelStyle() {
+      var b = arguments.length <= 0 || arguments[0] === undefined ? null : arguments[0];
+
       if (b) {
         this.el.bezelStyle = b;
         return this;
@@ -267,7 +291,9 @@ starstuff.button = function(settings) {
       }
     },
 
-    buttonType(b = null) {
+    buttonType: function buttonType() {
+      var b = arguments.length <= 0 || arguments[0] === undefined ? null : arguments[0];
+
       if (b) {
         this.el.buttonType = b;
         return this;
@@ -276,7 +302,9 @@ starstuff.button = function(settings) {
       }
     },
 
-    target(t = null) {
+    target: function target() {
+      var t = arguments.length <= 0 || arguments[0] === undefined ? null : arguments[0];
+
       if (t) {
         this.el.target = t;
         return this;
@@ -285,7 +313,9 @@ starstuff.button = function(settings) {
       }
     },
 
-    action(a = null) {
+    action: function action() {
+      var a = arguments.length <= 0 || arguments[0] === undefined ? null : arguments[0];
+
       if (a) {
         this.el.action = a;
         return this;
@@ -295,7 +325,9 @@ starstuff.button = function(settings) {
     },
 
     _id: null,
-    id(i = null) {
+    id: function id() {
+      var i = arguments.length <= 0 || arguments[0] === undefined ? null : arguments[0];
+
       if (i) {
         this._id = i;
         return this;
@@ -305,8 +337,8 @@ starstuff.button = function(settings) {
     }
   };
 
-  obj.el = $.NSButton.alloc.initWithFrame(starstuff.makeRect(...opts.rect));
-  obj.classString = $.NSStringFromClass(obj.el.class).js;
+  obj.el = $.NSButton.alloc.initWithFrame(starstuff.makeRect.apply(starstuff, _toConsumableArray(opts.rect)));
+  obj.classString = $.NSStringFromClass(obj.el['class']).js;
 
   obj.title(opts.title);
   obj.bezelStyle(opts.bezelStyle);
@@ -326,14 +358,16 @@ starstuff.button = function(settings) {
   return obj;
 };
 
-starstuff.textField = function(settings) {
-  let opts = starstuff.setOpts({
+starstuff.textField = function (settings) {
+  var opts = starstuff.setOpts({
     editable: true,
     rect: [25, 25, 200, 24]
   }, settings);
 
-  let obj = {
-    editable (b = null) {
+  var obj = {
+    editable: function editable() {
+      var b = arguments.length <= 0 || arguments[0] === undefined ? null : arguments[0];
+
       if (b !== null) {
         this.el.editable = b;
         return this;
@@ -343,7 +377,9 @@ starstuff.textField = function(settings) {
     },
 
     _id: null,
-    id(i = null) {
+    id: function id() {
+      var i = arguments.length <= 0 || arguments[0] === undefined ? null : arguments[0];
+
       if (i) {
         this._id = i;
         return this;
@@ -352,18 +388,20 @@ starstuff.textField = function(settings) {
       }
     },
 
-    val (v = null) {
+    val: function val() {
+      var v = arguments.length <= 0 || arguments[0] === undefined ? null : arguments[0];
+
       if (v) {
         this.el.stringValue = v;
         return this;
       } else {
         return this.el.stringValue;
       }
-    },
+    }
   };
 
-  obj.el = $.NSTextField.alloc.initWithFrame(starstuff.makeRect(...opts.rect));
-  obj.classString = $.NSStringFromClass(obj.el.class).js;
+  obj.el = $.NSTextField.alloc.initWithFrame(starstuff.makeRect.apply(starstuff, _toConsumableArray(opts.rect)));
+  obj.classString = $.NSStringFromClass(obj.el['class']).js;
 
   if (opts.id) {
     obj.id(opts.id);
@@ -374,8 +412,8 @@ starstuff.textField = function(settings) {
   return obj;
 };
 
-starstuff.fieldLabel = function(settings) {
-  let opts = starstuff.setOpts({
+starstuff.fieldLabel = function (settings) {
+  var opts = starstuff.setOpts({
     value: 'Field label',
     rect: [25, 25, 200, 24],
     drawsBackground: false,
@@ -383,8 +421,10 @@ starstuff.fieldLabel = function(settings) {
     selectable: true
   }, settings);
 
-  let obj = {
-    val (v = null) {
+  var obj = {
+    val: function val() {
+      var v = arguments.length <= 0 || arguments[0] === undefined ? null : arguments[0];
+
       if (v) {
         this.el.stringValue = v;
         return this;
@@ -393,7 +433,9 @@ starstuff.fieldLabel = function(settings) {
       }
     },
 
-    drawsBackground (b = null) {
+    drawsBackground: function drawsBackground() {
+      var b = arguments.length <= 0 || arguments[0] === undefined ? null : arguments[0];
+
       if (b !== null) {
         this.el.drawsBackground = b;
         return this;
@@ -402,7 +444,9 @@ starstuff.fieldLabel = function(settings) {
       }
     },
 
-    bezeled (b = null) {
+    bezeled: function bezeled() {
+      var b = arguments.length <= 0 || arguments[0] === undefined ? null : arguments[0];
+
       if (b !== null) {
         this.el.bezeled = b;
         return this;
@@ -411,7 +455,9 @@ starstuff.fieldLabel = function(settings) {
       }
     },
 
-    selectable (s = null) {
+    selectable: function selectable() {
+      var s = arguments.length <= 0 || arguments[0] === undefined ? null : arguments[0];
+
       if (s !== null) {
         this.el.selectable = s;
         return this;
@@ -421,7 +467,9 @@ starstuff.fieldLabel = function(settings) {
     },
 
     _id: null,
-    id(i = null) {
+    id: function id() {
+      var i = arguments.length <= 0 || arguments[0] === undefined ? null : arguments[0];
+
       if (i) {
         this._id = i;
         return this;
@@ -431,8 +479,8 @@ starstuff.fieldLabel = function(settings) {
     }
   };
 
-  obj.el = $.NSTextField.alloc.initWithFrame(starstuff.makeRect(...opts.rect));
-  obj.classString = $.NSStringFromClass(obj.el.class).js;
+  obj.el = $.NSTextField.alloc.initWithFrame(starstuff.makeRect.apply(starstuff, _toConsumableArray(opts.rect)));
+  obj.classString = $.NSStringFromClass(obj.el['class']).js;
 
   obj.val(opts.value);
   obj.drawsBackground(opts.drawsBackground);
@@ -449,17 +497,19 @@ starstuff.fieldLabel = function(settings) {
   return obj;
 };
 
-starstuff.image = function(settings) {
-  let opts = starstuff.setOpts({
+starstuff.image = function (settings) {
+  var opts = starstuff.setOpts({
     src: null
   }, settings);
 
-  let obj = {
+  var obj = {
     rect: [0, 0, 0, 0],
 
-    src(s = null) {
+    src: function src() {
+      var s = arguments.length <= 0 || arguments[0] === undefined ? null : arguments[0];
+
       if (s) {
-        let img = s;
+        var img = s;
 
         // If we received a string, we need to convert it to an NSImage
         if (s.isKindOfClass($.NSString)) {
@@ -468,9 +518,7 @@ starstuff.image = function(settings) {
 
         this.el.setImage(img);
 
-        this.width(img.size.width)
-          .height(img.size.height)
-          .size();
+        this.width(img.size.width).height(img.size.height).size();
 
         return this;
       } else {
@@ -478,7 +526,9 @@ starstuff.image = function(settings) {
       }
     },
 
-    pos(p = null) {
+    pos: function pos() {
+      var p = arguments.length <= 0 || arguments[0] === undefined ? null : arguments[0];
+
       if (p) {
         this.rect[0] = p.x;
         this.rect[1] = p.y;
@@ -490,7 +540,9 @@ starstuff.image = function(settings) {
       }
     },
 
-    width(w = null) {
+    width: function width() {
+      var w = arguments.length <= 0 || arguments[0] === undefined ? null : arguments[0];
+
       if (w) {
         this.rect[2] = w;
         return this;
@@ -499,7 +551,9 @@ starstuff.image = function(settings) {
       }
     },
 
-    height(h = null) {
+    height: function height() {
+      var h = arguments.length <= 0 || arguments[0] === undefined ? null : arguments[0];
+
       if (h) {
         this.rect[3] = h;
         return this;
@@ -508,17 +562,19 @@ starstuff.image = function(settings) {
       }
     },
 
-    size(w, h) {
+    size: function size(w, h) {
       this.el.setFrameSize({
         width: this.width(),
         height: this.height()
-      })
+      });
 
       return this;
     },
 
     _id: null,
-    id(i = null) {
+    id: function id() {
+      var i = arguments.length <= 0 || arguments[0] === undefined ? null : arguments[0];
+
       if (i) {
         this._id = i;
         return this;
@@ -533,8 +589,8 @@ starstuff.image = function(settings) {
     y: opts.rect[1]
   });
 
-  obj.el = $.NSImageView.alloc.initWithFrame(starstuff.makeRect(...obj.rect));
-  obj.classString = $.NSStringFromClass(obj.el.class).js;
+  obj.el = $.NSImageView.alloc.initWithFrame(starstuff.makeRect.apply(starstuff, _toConsumableArray(obj.rect)));
+  obj.classString = $.NSStringFromClass(obj.el['class']).js;
 
   if (opts.src) {
     obj.src(opts.src);
@@ -559,4 +615,5 @@ starstuff.image = function(settings) {
   return obj;
 };
 
-export default starstuff;
+exports['default'] = starstuff;
+module.exports = exports['default'];

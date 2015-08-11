@@ -58,3 +58,21 @@ $mainWindow.append(starstuff.fieldLabel({
 #### image({options})
 
 #### openPanel({options})
+
+## Contributing
+
+```
+npm install
+```
+
+To compile the source–written using es6–with Babel run:
+
+```
+npm run build
+```
+
+To recompile as you make changes run:
+
+```
+npm run watch
+```
